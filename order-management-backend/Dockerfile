@@ -3,7 +3,7 @@ FROM node:16
 # Set the working directory
 WORKDIR /usr/src/app
 
-# Install PostgreSQL client (optional)
+# Install PostgreSQL client (optional for `pg_isready`)
 RUN apt-get update && apt-get install -y postgresql-client
 
 # Copy package.json and package-lock.json
@@ -15,14 +15,17 @@ ENV NODE_ENV=development
 # Install dependencies (including devDependencies)
 RUN npm install
 
-# Rebuild native modules for Docker architecture
+# Rebuild native modules for Docker architecture (e.g., bcrypt)
 RUN npm rebuild bcrypt --build-from-source
+
+COPY prisma ./prisma
+
+# Generate Prisma client (ensures it matches the schema)
+RUN npx prisma generate
 
 # Copy application files
 COPY . .
 
-# Generate Prisma client (if used)
-RUN npx prisma generate
 
 # Expose the application port
 EXPOSE 5000

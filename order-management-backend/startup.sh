@@ -9,10 +9,10 @@ done
 
 echo "Database is ready!"
 
-npx ts-node-dev --respawn --transpile-only src/server.ts
-
 # Run migrations
+echo "Running migrations..."
 npx prisma migrate deploy
 
 # Start the application
+echo "Starting the application..."
 npm run start
