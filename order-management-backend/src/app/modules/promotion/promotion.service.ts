@@ -166,9 +166,44 @@ const getEnabledPromotions = async (): Promise<Promotion[]> => {
   return promotions;
 };
 
+const deletePromotion = async (promotionId: string): Promise<void> => {
+  const promotion = await prisma.promotion.findUnique({
+    where: { id: promotionId },
+  });
+
+  if (!promotion) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Promotion not found");
+  }
+
+  // Delete all related promotion slabs and promotion products
+  await prisma.promotionSlab.deleteMany({
+    where: { promotionId },
+  });
+
+  await prisma.promotionProduct.deleteMany({
+    where: { promotionId },
+  });
+
+  // Optionally: If you want to delete related order products that reference the promotion (use with caution)
+  // await prisma.orderProduct.updateMany({
+  //   where: {
+  //     discount: { gt: 0 }, // Assumes that the promotion would apply a discount to order products
+  //   },
+  //   data: {
+  //     discount: 0, // Remove the promotion discount from related order products
+  //   },
+  // });
+
+  // Now delete the promotion itself
+  await prisma.promotion.delete({
+    where: { id: promotionId },
+  });
+};
+
 export const PromotionService = {
   createPromotion,
   togglePromotionStatus,
   editPromotion,
   getEnabledPromotions,
+  deletePromotion,
 };

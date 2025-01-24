@@ -55,9 +55,22 @@ const getEnabledPromotions = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const deletePromotion = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  const result = await PromotionService.deletePromotion(id);
+  sendResponse<null>(res, {
+    statusCode: 200,
+    success: true,
+    message: "Promtion fetched successfully!",
+    data: null,
+  });
+});
+
 export const PromotionController = {
   promotionCreate,
   promotionToggleStatus,
   promotionEdit,
   getEnabledPromotions,
+  deletePromotion,
 };
