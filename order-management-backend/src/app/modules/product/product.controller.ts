@@ -16,6 +16,20 @@ const productCreate = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const productUpdate = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { ...productData } = req.body;
+  const result = await ProductService.updateProduct(id, productData);
+
+  sendResponse<IProduct>(res, {
+    statusCode: 200,
+    success: true,
+    message: "Product updated successfully!",
+    data: result,
+  });
+});
+
 export const ProductController = {
   productCreate,
+  productUpdate,
 };

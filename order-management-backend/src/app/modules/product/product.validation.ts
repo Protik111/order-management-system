@@ -17,6 +17,15 @@ const productCreateZodSchema = z.object({
   }),
 });
 
+const productUpdateZodSchema = z.object({
+  body: z.object({
+    name: z.string({
+      required_error: "Product name is required",
+    }),
+  }),
+});
+
 export const ProductValidation = {
   productCreateZodSchema,
+  productUpdateZodSchema,
 };
