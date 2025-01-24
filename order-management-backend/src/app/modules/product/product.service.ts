@@ -85,16 +85,62 @@ const deleteProduct = async (id: string): Promise<Product> => {
 };
 
 const getProducts = async (): Promise<Product[]> => {
-  // Fetch products based on the `onlyEnabled` flag
+  // Fetch products and their related promotions (if any)
   const products = await prisma.product.findMany({
     where: { isEnabled: true },
+    include: {
+      promotionProducts: {
+        where: { promotion: { isEnabled: true } }, // Only consider enabled promotions
+        include: {
+          promotion: {
+            select: {
+              id: true,
+              title: true,
+              type: true,
+              discount: true,
+              slabs: true, // Include the slabs for weighted promotions
+            },
+          },
+        },
+      },
+    },
   });
 
   if (!products || products.length === 0) {
     throw new ApiError(httpStatus.NOT_FOUND, "No products found");
   }
 
-  return products;
+  // Map the results to include the necessary details for each product
+  const productWithPromotions = products.map((product) => {
+    const promotionData = product.promotionProducts.map(
+      (promotionProduct) => promotionProduct.promotion
+    );
+
+    // Filter for weighted promotions and map the necessary details
+    const weightedPromotion = promotionData.find(
+      (promotion) => promotion.type === "weighted"
+    );
+
+    // Add discount and slabs for weighted promotion
+    if (weightedPromotion) {
+      return {
+        ...product,
+        promotionDiscount: weightedPromotion.discount, // Include discount
+        promotionSlabs: weightedPromotion.slabs, // Include slabs if it's a weighted promotion
+        promotionTitle: weightedPromotion.title,
+      };
+    }
+
+    // Return product data if no weighted promotion
+    return {
+      ...product,
+      promotionDiscount: null,
+      promotionSlabs: [],
+      promotionTitle: null,
+    };
+  });
+
+  return productWithPromotions;
 };
 
 export const ProductService = {
