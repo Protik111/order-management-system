@@ -13,10 +13,8 @@ COPY package*.json ./
 ENV NODE_ENV=development
 
 # Install dependencies (including devDependencies)
-RUN npm install
+RUN yarn install
 
-# Rebuild native modules for Docker architecture (e.g., bcrypt)
-RUN npm rebuild bcrypt --build-from-source
 
 COPY prisma ./prisma
 

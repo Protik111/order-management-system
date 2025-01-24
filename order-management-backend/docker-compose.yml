@@ -12,9 +12,8 @@ services:
       - db
     restart: always
     volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
-    command: npm run start
+      - "C:\\Users\\rafiu\\OneDrive\\Desktop\\My_Resources\\My_Files\\Learning_Dev_Resources\\Courses\\Backend Engineering - Poridhi\\Projects\\manush-tech-task\\order-management-backend:/usr/src/app"
+      - "/usr/src/app/node_modules"
 
   db:
     image: postgres:latest
