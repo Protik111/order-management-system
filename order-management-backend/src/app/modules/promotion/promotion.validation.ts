@@ -87,6 +87,15 @@ const promotionCreateZodSchema = z.object({
     ),
 });
 
+const updateStatusZodSchema = z.object({
+  body: z.object({
+    enable: z.boolean({
+      required_error: "Enable status is required",
+    }),
+  }),
+});
+
 export const PromotionValidation = {
   promotionCreateZodSchema,
+  updateStatusZodSchema,
 };

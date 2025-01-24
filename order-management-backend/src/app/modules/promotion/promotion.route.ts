@@ -20,12 +20,18 @@ router.post(
   ProductController.promotionCreate
 );
 
-// router.patch(
-//   "/:id",
-//   auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.MODERATOR, ENUM_USER_ROLE.USER),
-//   validateRequest(ProductValidation.productUpdateZodSchema),
-//   ProductController.productUpdate
-// );
+router.patch(
+  "/:id",
+  auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.MODERATOR, ENUM_USER_ROLE.USER),
+  ProductController.promotionEdit
+);
+
+router.patch(
+  "/status/:id",
+  auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.MODERATOR, ENUM_USER_ROLE.USER),
+  validateRequest(PromotionValidation.updateStatusZodSchema),
+  ProductController.promotionToggleStatus
+);
 
 // router.delete(
 //   "/:id",

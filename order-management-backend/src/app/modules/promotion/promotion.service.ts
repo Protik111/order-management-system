@@ -99,66 +99,63 @@ const createPromotion = async (payload: IPromotion): Promise<Promotion> => {
   return promotion;
 };
 
-const getPromotions = async () => {
-  return await prisma.promotion.findMany({
-    where: {
-      isEnabled: true,
-    },
-  });
-};
-
-const disablePromotion = async (promotionId: string) => {
-  const promotion = await prisma.promotion.update({
+const togglePromotionStatus = async (
+  promotionId: string,
+  enable: boolean
+): Promise<Promotion> => {
+  // Update the `isEnabled` flag for the promotion
+  const updatedPromotion = await prisma.promotion.update({
     where: { id: promotionId },
-    data: { isEnabled: false },
+    data: { isEnabled: enable },
   });
 
-  if (!promotion) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Unable to disable promotion");
+  if (!updatedPromotion) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Promotion not found");
   }
 
-  return promotion;
-};
-
-const enablePromotion = async (promotionId: string) => {
-  const promotion = await prisma.promotion.update({
-    where: { id: promotionId },
-    data: { isEnabled: true },
-  });
-
-  if (!promotion) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Unable to enable promotion");
-  }
-
-  return promotion;
+  return updatedPromotion;
 };
 
 const editPromotion = async (
   promotionId: string,
-  payload: Partial<IPromotion>
-) => {
-  const { startDate, endDate, title } = payload;
+  updates: { title?: string; startDate?: Date; endDate?: Date }
+): Promise<Promotion> => {
+  const { title, startDate, endDate } = updates;
 
-  const promotion = await prisma.promotion.update({
+  if (!title && !startDate && !endDate) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "No valid fields provided for updating."
+    );
+  }
+
+  // Ensure that startDate is before endDate
+  if (startDate && endDate && startDate >= endDate) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "Start date must be before the end date."
+    );
+  }
+
+  // Update only the allowed fields
+  const updatedPromotion = await prisma.promotion.update({
     where: { id: promotionId },
     data: {
-      startDate: startDate ?? undefined,
-      endDate: endDate ?? undefined,
-      title: title ?? undefined,
+      ...(title && { title }),
+      ...(startDate && { startDate }),
+      ...(endDate && { endDate }),
     },
   });
 
-  if (!promotion) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Unable to edit promotion");
+  if (!updatedPromotion) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Promotion not found");
   }
 
-  return promotion;
+  return updatedPromotion;
 };
 
 export const PromotionService = {
   createPromotion,
-  getPromotions,
-  disablePromotion,
-  enablePromotion,
+  togglePromotionStatus,
   editPromotion,
 };
