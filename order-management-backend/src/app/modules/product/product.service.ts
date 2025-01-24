@@ -84,8 +84,22 @@ const deleteProduct = async (id: string): Promise<Product> => {
   return deletedProduct;
 };
 
+const getProducts = async (): Promise<Product[]> => {
+  // Fetch products based on the `onlyEnabled` flag
+  const products = await prisma.product.findMany({
+    where: { isEnabled: true },
+  });
+
+  if (!products || products.length === 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, "No products found");
+  }
+
+  return products;
+};
+
 export const ProductService = {
   createProduct,
   updateProduct,
   deleteProduct,
+  getProducts,
 };
