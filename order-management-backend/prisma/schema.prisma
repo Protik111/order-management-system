@@ -28,32 +28,55 @@ model User {
 }
 
 model Product {
-  id          String         @id @default(uuid())
-  name        String
-  description String
-  price       Float
-  weight      Float
-  isEnabled   Boolean        @default(true)
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  orders      OrderProduct[]
+  id                String             @id @default(uuid())
+  name              String
+  description       String
+  price             Float
+  weight            Float
+  isEnabled         Boolean            @default(true) // To enable/disable the product
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  orders            OrderProduct[] // Relation to OrderProduct (to track products in orders)
+  promotionProducts PromotionProduct[] // Relation to PromotionProduct for applied promotions
 
   @@map("products")
 }
 
 model Promotion {
-  id        String   @id @default(uuid())
-  title     String
-  type      String // 'percentage', 'fixed', or 'weighted'
-  discount  Float?
-  slabs     Json? // For weighted promotions (array of { minWeight, maxWeight, discount })
-  startDate DateTime
-  endDate   DateTime
-  isEnabled Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                String             @id @default(uuid())
+  title             String
+  type              PromotionType // Type of the promotion: percentage, fixed, weighted
+  discount          Float? // For percentage or fixed types (null for weighted)
+  slabs             PromotionSlab[] // Relationship to PromotionSlab (for weighted promotions)
+  startDate         DateTime
+  endDate           DateTime
+  isEnabled         Boolean            @default(true) // To enable/disable promotion
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  promotionProducts PromotionProduct[] // Relation to PromotionProduct
 
   @@map("promotions")
+}
+
+model PromotionSlab {
+  id          String    @id @default(uuid())
+  promotionId String
+  minWeight   Float
+  maxWeight   Float
+  discount    Float
+  promotion   Promotion @relation(fields: [promotionId], references: [id])
+
+  @@map("promotionSlabs")
+}
+
+model PromotionProduct {
+  id          String    @id @default(uuid())
+  promotionId String
+  productId   String
+  promotion   Promotion @relation(fields: [promotionId], references: [id])
+  product     Product   @relation(fields: [productId], references: [id])
+
+  @@map("promotionProducts")
 }
 
 model Order {
@@ -65,7 +88,7 @@ model Order {
   discount      Float
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
-  products      OrderProduct[]
+  products      OrderProduct[] // Relation to OrderProduct (list of products in this order)
 
   @@map("orders")
 }
@@ -88,4 +111,10 @@ enum Role {
   user
   admin
   moderator
+}
+
+enum PromotionType {
+  percentage
+  fixed
+  weighted
 }
