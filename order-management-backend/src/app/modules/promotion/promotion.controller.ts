@@ -44,8 +44,20 @@ const promotionEdit = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const ProductController = {
+const getEnabledPromotions = catchAsync(async (req: Request, res: Response) => {
+  const result = await PromotionService.getEnabledPromotions();
+
+  sendResponse<Promotion[]>(res, {
+    statusCode: 200,
+    success: true,
+    message: "Promtion fetched successfully!",
+    data: result,
+  });
+});
+
+export const PromotionController = {
   promotionCreate,
   promotionToggleStatus,
   promotionEdit,
+  getEnabledPromotions,
 };
