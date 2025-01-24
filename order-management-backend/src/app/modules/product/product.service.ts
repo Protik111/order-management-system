@@ -64,7 +64,28 @@ const updateProduct = async (
   return updatedProduct;
 };
 
+const deleteProduct = async (id: string): Promise<Product> => {
+  const existingProduct = await prisma.product.findUnique({
+    where: { id },
+  });
+
+  if (!existingProduct) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Product not found");
+  }
+
+  const deletedProduct = await prisma.product.delete({
+    where: { id },
+  });
+
+  if (!deletedProduct) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Unable to delete product");
+  }
+
+  return deletedProduct;
+};
+
 export const ProductService = {
   createProduct,
   updateProduct,
+  deleteProduct,
 };

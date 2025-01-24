@@ -21,4 +21,10 @@ router.patch(
   ProductController.productUpdate
 );
 
+router.delete(
+  "/:id",
+  auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.MODERATOR, ENUM_USER_ROLE.USER),
+  ProductController.deleteUpdate
+);
+
 export const ProductRoutes = router;
