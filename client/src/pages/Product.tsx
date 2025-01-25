@@ -7,12 +7,12 @@ const Product: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [productData, setProductData] = useState<any>(null); // For editing product
+  const [productData, setProductData] = useState<any>(null);
   const [hasCreated, setHasCreated] = useState<boolean>(false);
 
   const showModal = () => {
     setIsModalOpen(true);
-    setIsEdit(false); // Ensure it's in create mode
+    setIsEdit(false);
     setProductData(null);
   };
 
@@ -20,11 +20,11 @@ const Product: React.FC = () => {
   const handleEdit = (product: any) => {
     setIsModalOpen(true);
     setIsEdit(true);
-    setProductData(product); // Pass the product data for editing
+    setProductData(product);
   };
 
   const handleSuccess = () => {
-    setHasCreated(!hasCreated); // Trigger product list refresh
+    setHasCreated(!hasCreated);
   };
 
   return (
