@@ -1,60 +1,52 @@
 import catchAsync from "../../../shared/catchAsync";
 import { Request, Response } from "express";
 import sendResponse from "../../../shared/sendResponse";
-import { IProduct } from "./order.interface";
-import { ProductService } from "./product.service";
+import { OrderDetails } from "./order.interface";
+import { OrderService } from "./order.service";
+import { Order } from "@prisma/client";
 
-const productCreate = catchAsync(async (req: Request, res: Response) => {
-  const { ...productData } = req.body;
-  const result = await ProductService.createProduct(productData);
+const orderCreate = catchAsync(async (req: Request, res: Response) => {
+  const { customerName, customerEmail, orderItems } = req.body;
+  const result = await OrderService.createOrder(
+    customerName,
+    customerEmail,
+    orderItems
+  );
 
-  sendResponse<IProduct>(res, {
+  sendResponse<Order>(res, {
     statusCode: 201,
     success: true,
-    message: "Product created successfully!",
+    message: "Order created successfully!",
     data: result,
   });
 });
 
-const productUpdate = catchAsync(async (req: Request, res: Response) => {
+const getOrders = catchAsync(async (req: Request, res: Response) => {
+  const result = await OrderService.getOrders();
+
+  sendResponse<Order[]>(res, {
+    statusCode: 200,
+    success: true,
+    message: "Orders fetched successfully!",
+    data: result,
+  });
+});
+
+const getOrderDetails = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { ...productData } = req.body;
-  const result = await ProductService.updateProduct(id, productData);
 
-  sendResponse<IProduct>(res, {
+  const result = await OrderService.getOrderDetails(id);
+
+  sendResponse<OrderDetails>(res, {
     statusCode: 200,
     success: true,
-    message: "Product updated successfully!",
+    message: "Order details fetched successfully!",
     data: result,
   });
 });
 
-const deleteUpdate = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const result = await ProductService.deleteProduct(id);
-
-  sendResponse<IProduct>(res, {
-    statusCode: 200,
-    success: true,
-    message: "Product deleted successfully!",
-    data: result,
-  });
-});
-
-const getProducts = catchAsync(async (req: Request, res: Response) => {
-  const result = await ProductService.getProducts();
-
-  sendResponse<IProduct[]>(res, {
-    statusCode: 200,
-    success: true,
-    message: "Product fetched successfully!",
-    data: result,
-  });
-});
-
-export const ProductController = {
-  productCreate,
-  productUpdate,
-  deleteUpdate,
-  getProducts,
+export const OrderController = {
+  orderCreate,
+  getOrderDetails,
+  getOrders,
 };

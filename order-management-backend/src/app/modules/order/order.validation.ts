@@ -1,31 +1,33 @@
 import { z } from "zod";
 
-const productCreateZodSchema = z.object({
+const createOrderZodSchema = z.object({
   body: z.object({
-    name: z.string({
-      required_error: "Product name is required",
+    customerName: z.string({
+      required_error: "Customer name is required",
     }),
-    description: z.string({
-      required_error: "Product description is required",
-    }),
-    price: z.number({
-      required_error: "Price is required",
-    }),
-    weight: z.number({
-      required_error: "Weight is required",
-    }),
+    customerEmail: z
+      .string({
+        required_error: "Customer email is required",
+      })
+      .email("Invalid email address"),
+    orderItems: z
+      .array(
+        z.object({
+          productId: z.string({
+            required_error: "Product ID is required",
+          }),
+          quantity: z
+            .number({
+              required_error: "Quantity is required",
+            })
+            .int("Quantity must be an integer")
+            .positive("Quantity must be greater than 0"),
+        })
+      )
+      .min(1, "At least one order item is required"),
   }),
 });
 
-const productUpdateZodSchema = z.object({
-  body: z.object({
-    name: z.string({
-      required_error: "Product name is required",
-    }),
-  }),
-});
-
-export const ProductValidation = {
-  productCreateZodSchema,
-  productUpdateZodSchema,
+export const OrderValidation = {
+  createOrderZodSchema,
 };

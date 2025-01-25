@@ -1,7 +1,7 @@
 import express from "express";
 import validateRequest from "../../middlewares/validateRequest";
-import { ProductValidation } from "./product.validation";
-import { ProductController } from "./product.controller";
+import { OrderValidation } from "./order.validation";
+import { OrderController } from "./order.controller";
 import { ENUM_USER_ROLE } from "../../../enums/user";
 import auth from "../../middlewares/auth";
 
@@ -10,27 +10,20 @@ const router = express.Router();
 router.get(
   "/",
   auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.MODERATOR, ENUM_USER_ROLE.USER),
-  ProductController.getProducts
+  OrderController.getOrders
 );
 
 router.post(
   "/",
   auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.MODERATOR, ENUM_USER_ROLE.USER),
-  validateRequest(ProductValidation.productCreateZodSchema),
-  ProductController.productCreate
+  validateRequest(OrderValidation.createOrderZodSchema),
+  OrderController.orderCreate
 );
 
-router.patch(
-  "/:id",
+router.get(
+  "/details/:id",
   auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.MODERATOR, ENUM_USER_ROLE.USER),
-  validateRequest(ProductValidation.productUpdateZodSchema),
-  ProductController.productUpdate
+  OrderController.getOrderDetails
 );
 
-router.delete(
-  "/:id",
-  auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.MODERATOR, ENUM_USER_ROLE.USER),
-  ProductController.deleteUpdate
-);
-
-export const ProductRoutes = router;
+export const OrderRoutes = router;
