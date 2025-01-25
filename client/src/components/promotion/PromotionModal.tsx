@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { AxiosError } from "axios";
 import axiosInstance from "../../lib/axios";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
+import moment from "moment";
 
 interface PromotionModalProps {
   visible: boolean;
@@ -50,12 +51,20 @@ const PromotionModal: React.FC<PromotionModalProps> = ({
 
   useEffect(() => {
     if (isEdit && productData) {
+      const parsedStartDate = productData.startDate
+        ? moment(productData.startDate, "YYYY-MM-DD HH:mm:ss")
+        : null;
+
+      const parsedEndDate = productData.endDate
+        ? moment(productData.endDate, "YYYY-MM-DD HH:mm:ss")
+        : null;
+
       form.setFieldsValue({
         title: productData.title,
         type: productData.type,
         discount: productData.discount,
-        startDate: productData.startDate,
-        endDate: productData.endDate,
+        startDate: parsedStartDate,
+        endDate: parsedEndDate,
         productIds: productData.productIds,
         slabs: productData.slabs || [],
       });
@@ -66,6 +75,7 @@ const PromotionModal: React.FC<PromotionModalProps> = ({
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
+
       try {
         const response = isEdit
           ? await axiosInstance.patch(`/promotion/${productData.id}`, values)
@@ -118,30 +128,34 @@ const PromotionModal: React.FC<PromotionModalProps> = ({
         >
           <Input placeholder="Enter promotion title" />
         </Form.Item>
-        <Form.Item
-          label="Type"
-          name="type"
-          initialValue="percentage"
-          rules={[{ required: true, message: "Type is required" }]}
-        >
-          <Select onChange={handlePromotionTypeChange}>
-            <Select.Option value="percentage">Percentage</Select.Option>
-            <Select.Option value="fixed">Fixed</Select.Option>
-            <Select.Option value="weighted">Weighted</Select.Option>
-          </Select>
-        </Form.Item>
-        <Form.Item
-          label="Discount"
-          name="discount"
-          rules={[{ required: true, message: "Discount is required" }]}
-        >
-          <InputNumber
-            min={0}
-            max={100}
-            placeholder="Enter discount value"
-            style={{ width: "100%" }}
-          />
-        </Form.Item>
+        {!isEdit && !productData && (
+          <Form.Item
+            label="Type"
+            name="type"
+            initialValue="percentage"
+            rules={[{ required: true, message: "Type is required" }]}
+          >
+            <Select onChange={handlePromotionTypeChange}>
+              <Select.Option value="percentage">Percentage</Select.Option>
+              <Select.Option value="fixed">Fixed</Select.Option>
+              <Select.Option value="weighted">Weighted</Select.Option>
+            </Select>
+          </Form.Item>
+        )}
+        {!isEdit && !productData && (
+          <Form.Item
+            label="Discount"
+            name="discount"
+            rules={[{ required: true, message: "Discount is required" }]}
+          >
+            <InputNumber
+              min={0}
+              max={100}
+              placeholder="Enter discount value"
+              style={{ width: "100%" }}
+            />
+          </Form.Item>
+        )}
         <Form.Item
           label="Start Date"
           name="startDate"
@@ -164,26 +178,28 @@ const PromotionModal: React.FC<PromotionModalProps> = ({
             style={{ width: "100%" }}
           />
         </Form.Item>
-        <Form.Item
-          label="Products"
-          name="productIds"
-          rules={[
-            { required: true, message: "At least one product is required" },
-          ]}
-        >
-          <Select
-            mode="multiple"
-            placeholder="Select products"
-            style={{ width: "100%" }}
+        {!isEdit && !productData && (
+          <Form.Item
+            label="Products"
+            name="productIds"
+            rules={[
+              { required: true, message: "At least one product is required" },
+            ]}
           >
-            {productList.map((product) => (
-              <Select.Option key={product.id} value={product.id}>
-                {product.name}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
-        {promotionType === "weighted" && (
+            <Select
+              mode="multiple"
+              placeholder="Select products"
+              style={{ width: "100%" }}
+            >
+              {productList.map((product) => (
+                <Select.Option key={product.id} value={product.id}>
+                  {product.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        )}
+        {!isEdit && !productData && promotionType === "weighted" && (
           <Form.List
             name="slabs"
             initialValue={[]}
