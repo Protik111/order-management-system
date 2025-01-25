@@ -1,14 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  Card,
-  Row,
-  Col,
-  InputNumber,
-  Tag,
-  Spin,
-  Typography,
-  Image,
-} from "antd";
+import { Card, Row, Col, Tag, Spin, Typography, Image, Button } from "antd";
 import axiosInstance from "../../lib/axios";
 
 interface Slab {
@@ -25,6 +16,7 @@ type Product = {
   description: string;
   price: number;
   weight: number;
+  discountedPrice: number;
   imageUrl?: string;
   promotion?: {
     type: "percentage" | "fixed" | "weighted";
@@ -54,9 +46,8 @@ const ProductCart = () => {
     }
   };
 
-  const handleQuantityChange = (productId: string, value: number | null) => {
-    // Implement your quantity change logic
-    console.log(`Product ${productId} quantity changed to:`, value);
+  const handleAddToCart = (product: Product) => {
+    console.log(product);
   };
 
   const calculateWeightedDiscount = (weight: number, slabs: Slab[]) => {
@@ -72,7 +63,7 @@ const ProductCart = () => {
 
       <Spin spinning={loading}>
         <Row gutter={[16, 16]}>
-          {products.map((product) => (
+          {products?.map((product) => (
             <Col key={product.id} xs={24} sm={12} md={8} lg={6} xl={6}>
               <Card
                 hoverable
@@ -89,14 +80,13 @@ const ProductCart = () => {
                 }
                 actions={[
                   <div key="quantity" style={{ padding: "8px" }}>
-                    <InputNumber
-                      min={1}
-                      defaultValue={1}
-                      onChange={(value) =>
-                        handleQuantityChange(product.id, value)
-                      }
+                    <Button
+                      type="primary"
+                      onClick={() => handleAddToCart(product)}
                       style={{ width: "100%" }}
-                    />
+                    >
+                      Add to Cart
+                    </Button>
                   </div>,
                 ]}
               >
@@ -110,7 +100,7 @@ const ProductCart = () => {
                         </p>
 
                         <Tag color="green" style={{ fontSize: "1rem" }}>
-                          ৳{product.price.toFixed(2)}
+                          ৳{product?.discountedPrice.toFixed(2)}
                         </Tag>
 
                         {product.promotion && (

@@ -2,9 +2,15 @@ import React from "react";
 import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
 import UserData from "../UserData";
+import { ShoppingCartOutlined } from "@ant-design/icons";
+import { Badge } from "antd";
+import { useCart } from "../../hooks/useCart";
+import AddToCartDrawer from "./AddToCard";
 
 const Header: React.FC = () => {
   const token = Cookies.get("user-cred");
+
+  const { cartOpen, setCartOpen } = useCart();
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-white py-6 shadow-md shadow-black/10 z-[1024] dark:bg-darkRaisin">
@@ -42,6 +48,30 @@ const Header: React.FC = () => {
                 </li>
               </Link>
             )}
+
+            {token && (
+              <Badge
+                count={5}
+                overflowCount={99} // Limits the display to "99+"
+                style={{
+                  backgroundColor: "#f5222d",
+                  color: "white",
+                  fontSize: "12px",
+                  minWidth: "20px",
+                  height: "20px",
+                  lineHeight: "20px",
+                  borderRadius: "50%",
+                  textAlign: "center",
+                }}
+              >
+                <ShoppingCartOutlined
+                  onClick={() => setCartOpen(true)}
+                  style={{ fontSize: "24px", color: "#000", cursor: "pointer" }}
+                />
+              </Badge>
+            )}
+
+            {cartOpen && <AddToCartDrawer />}
           </ul>
         </div>
       </div>
