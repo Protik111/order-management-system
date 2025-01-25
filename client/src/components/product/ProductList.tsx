@@ -11,11 +11,12 @@ interface Product {
   weight: number;
 }
 
-interface ProductListProps {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const ProductList: React.FC<{
   hasCreated: boolean;
-}
-
-const ProductList = ({ hasCreated }: ProductListProps) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onEdit: (product: any) => void;
+}> = ({ hasCreated, onEdit }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -45,11 +46,6 @@ const ProductList = ({ hasCreated }: ProductListProps) => {
     }
   };
 
-  const handleUpdate = (product: Product) => {
-    // Logic to open a modal or navigate to the update page with pre-filled values
-    console.log(`Updating product: ${product.name}`);
-  };
-
   const columns = [
     {
       title: "Name",
@@ -76,13 +72,10 @@ const ProductList = ({ hasCreated }: ProductListProps) => {
     {
       title: "Actions",
       key: "actions",
-      render: (_: string, record: Product) => (
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      render: (_: any, record: Product) => (
         <div className="flex gap-2">
-          <Button
-            type="primary"
-            onClick={() => handleUpdate(record)}
-            className="bg-blue-500 text-white"
-          >
+          <Button type="primary" onClick={() => onEdit(record)}>
             Update
           </Button>
           <Popconfirm
