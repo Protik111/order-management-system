@@ -38,7 +38,7 @@ const Product: React.FC = () => {
             className="btn-dark-full text-regular max-w-max"
             onClick={showModal}
           >
-            Create Order
+            Create Product
           </button>
         </div>
         <hr className="mt-2 bg-[lightGray] h-[2px]" />

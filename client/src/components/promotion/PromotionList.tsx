@@ -40,7 +40,7 @@ const PromotionList: React.FC<PromotionListProps> = ({
       setPromotions(response?.data?.data || []);
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
-      toast.error(
+      console.log(
         axiosError?.response?.data?.message || "Failed to fetch promotions"
       );
     } finally {

@@ -52,15 +52,14 @@ const promotionCreateZodSchema = z.object({
     })
     .refine(
       (data) => {
-        // Handle "discount" validation at a higher level
         if (data.type === "percentage" || data.type === "fixed") {
           if (data.discount === null || data.discount === undefined) {
             return false; // Discount is required for percentage/fixed
           }
         }
-        if (data.type === "weighted" && data.discount !== null) {
-          return false; // Discount must be null for weighted
-        }
+        // if (data.type === "weighted" && data.discount !== null) {
+        //   return false; // Discount must be null for weighted
+        // }
         return true;
       },
       {

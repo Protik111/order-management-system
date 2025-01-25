@@ -1,8 +1,9 @@
 import httpStatus from "http-status";
 import ApiError from "../../../errors/ApiError";
 import prisma from "../../../shared/prisma";
-import { Product } from "@prisma/client";
+import { Product, Promotion, PromotionSlab } from "@prisma/client";
 import { IProduct } from "./product.interface";
+import { ProductUtils } from "./product.utils";
 
 const createProduct = async (payload: IProduct): Promise<Product> => {
   const { name } = payload;
@@ -84,13 +85,17 @@ const deleteProduct = async (id: string): Promise<Product> => {
   return deletedProduct;
 };
 
+interface BasePromotion extends Promotion {
+  slabs: PromotionSlab[]; // Required for weighted
+}
+
 const getProducts = async (): Promise<Product[]> => {
   // Fetch products and their related promotions (if any)
   const products = await prisma.product.findMany({
     where: { isEnabled: true },
     include: {
       promotionProducts: {
-        where: { promotion: { isEnabled: true } }, // Only consider enabled promotions
+        where: { promotion: { isEnabled: true } },
         include: {
           promotion: {
             select: {
@@ -98,45 +103,62 @@ const getProducts = async (): Promise<Product[]> => {
               title: true,
               type: true,
               discount: true,
-              slabs: true, // Include the slabs for weighted promotions
+              slabs: true, // Only needed for weighted
+              isEnabled: true,
+              startDate: true,
+              endDate: true,
+              createdAt: true,
+              updatedAt: true,
             },
           },
         },
       },
     },
   });
-
   if (!products || products.length === 0) {
     throw new ApiError(httpStatus.NOT_FOUND, "No products found");
   }
 
-  // Map the results to include the necessary details for each product
   const productWithPromotions = products.map((product) => {
-    const promotionData = product.promotionProducts.map(
-      (promotionProduct) => promotionProduct.promotion
-    );
+    // Type-safe promotion extraction
+    const promotions = product.promotionProducts
+      .map((pp) => pp.promotion)
+      .filter((p): p is BasePromotion => {
+        if (!p) return false;
+        if (ProductUtils.isWeightedPromotion(p)) return true;
+        if (ProductUtils.isPercentagePromotion(p)) return true;
+        if (ProductUtils.isFixedPromotion(p)) return true;
+        return false;
+      });
 
-    // Filter for weighted promotions and map the necessary details
-    const weightedPromotion = promotionData.find(
-      (promotion) => promotion.type === "weighted"
-    );
+    // Find active promotion with proper typing
+    const activePromotion =
+      promotions.find((p) => p.type === "weighted") || promotions[0] || null;
 
-    // Add discount and slabs for weighted promotion
-    if (weightedPromotion) {
-      return {
-        ...product,
-        promotionDiscount: weightedPromotion.discount, // Include discount
-        promotionSlabs: weightedPromotion.slabs, // Include slabs if it's a weighted promotion
-        promotionTitle: weightedPromotion.title,
-      };
+    // Calculate discounted price with type-safe promotion
+    let discountedPrice = product.price;
+    if (activePromotion) {
+      if (ProductUtils.isWeightedPromotion(activePromotion)) {
+        const applicableSlab = activePromotion.slabs.find(
+          (slab) =>
+            product.weight >= slab.minWeight && product.weight <= slab.maxWeight
+        );
+        discountedPrice = applicableSlab
+          ? product.price - applicableSlab.discount
+          : product.price;
+      } else if (ProductUtils.isPercentagePromotion(activePromotion)) {
+        discountedPrice = product.price * (1 - activePromotion.discount / 100);
+      } else if (ProductUtils.isFixedPromotion(activePromotion)) {
+        discountedPrice = product.price - activePromotion.discount;
+      }
     }
 
-    // Return product data if no weighted promotion
+    const { promotionProducts, ...restProduct } = product;
+
     return {
-      ...product,
-      promotionDiscount: null,
-      promotionSlabs: [],
-      promotionTitle: null,
+      ...restProduct,
+      discountedPrice,
+      promotion: activePromotion,
     };
   });
 
