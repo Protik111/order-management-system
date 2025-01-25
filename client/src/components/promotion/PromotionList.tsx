@@ -13,6 +13,7 @@ interface Promotion {
   startDate: string;
   endDate: string;
   productIds: string[];
+  isEnabled?: boolean;
   slabs?: { minWeight: number; maxWeight: number; discount: number }[];
 }
 
@@ -51,11 +52,24 @@ const PromotionList: React.FC<PromotionListProps> = ({
     try {
       await axiosInstance.delete(`/promotion/${id}`);
       toast.success("Promotion deleted successfully!");
-      fetchPromotions(); // Refresh the list
+      fetchPromotions();
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       message.error(
         axiosError?.response?.data?.message || "Failed to delete promotion"
+      );
+    }
+  };
+
+  const handleUpdateStatus = async (id: string, enable: boolean) => {
+    try {
+      await axiosInstance.patch(`/promotion/status/${id}`, { enable });
+      toast.success("Promotion status updated successfully!");
+      fetchPromotions();
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      message.error(
+        axiosError?.response?.data?.message || "Failed to update status"
       );
     }
   };
@@ -106,6 +120,21 @@ const PromotionList: React.FC<PromotionListProps> = ({
             cancelText="No"
           >
             <Button danger>Delete</Button>
+          </Popconfirm>
+
+          <Popconfirm
+            title={
+              record?.isEnabled
+                ? "Are you sure you want to disable this promotion?"
+                : "Are you sure you want to enable this promotion?"
+            }
+            onConfirm={() => handleUpdateStatus(record.id, !record?.isEnabled)}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button color="purple" variant="solid">
+              {record?.isEnabled ? "Disable" : "Enable"}
+            </Button>
           </Popconfirm>
         </Space>
       ),

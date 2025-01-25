@@ -155,9 +155,7 @@ const editPromotion = async (
 };
 
 const getEnabledPromotions = async (): Promise<Promotion[]> => {
-  const promotions = await prisma.promotion.findMany({
-    where: { isEnabled: true },
-  });
+  const promotions = await prisma.promotion.findMany();
 
   if (!promotions || promotions.length === 0) {
     throw new ApiError(httpStatus.NOT_FOUND, "No enabled promotions found");
