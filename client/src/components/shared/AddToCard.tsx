@@ -7,24 +7,21 @@ import {
   Divider,
   List,
   Popconfirm,
-  message,
 } from "antd";
 import { useCart } from "../../hooks/useCart";
 
 const { Text, Title } = Typography;
 
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  discountedPrice?: number;
-  quantity: number;
-}
-
 const AddToCartDrawer: React.FC = () => {
   const [quantity, setQuantity] = useState(1);
-  const { cartOpen, setCartOpen, cart, removeFromCart, calculateTotal } =
-    useCart();
+  const {
+    cartOpen,
+    setCartOpen,
+    cart,
+    removeFromCart,
+    calculateTotal,
+    updateQuantity,
+  } = useCart();
 
   const sampleProduct = {
     id: "c281c440-6500-4dcc-a118-311da6ccee73",
@@ -46,11 +43,12 @@ const AddToCartDrawer: React.FC = () => {
       discountedPrice: sampleProduct.discountedPrice,
       quantity,
     };
-    addToCart(product);
+    console.log("productor", product);
+    // addToCart(product);
   };
 
   return (
-    <>
+    <div>
       {/* Drawer Component */}
       <Drawer
         title="Add to Cart"
@@ -69,9 +67,9 @@ const AddToCartDrawer: React.FC = () => {
           <Text>
             Price:{" "}
             <strong>
-              ${sampleProduct.discountedPrice || sampleProduct.price}{" "}
+              ৳{sampleProduct.discountedPrice || sampleProduct.price}{" "}
               {sampleProduct.discountedPrice && (
-                <Text delete>${sampleProduct.price}</Text>
+                <Text delete>৳{sampleProduct.price}</Text>
               )}
             </strong>
           </Text>
@@ -133,10 +131,12 @@ const AddToCartDrawer: React.FC = () => {
             >
               <List.Item.Meta
                 title={item.name}
-                description={`Price: $${item.discountedPrice || item.price}`}
+                description={`Price: ৳${item.discountedPrice || item.price}`}
               />
               <div>
-                Total: ${(item.discountedPrice || item.price) * item.quantity}
+                Total: ৳
+                {(item.discountedPrice || item.price) *
+                  (item.quantity as number)}
               </div>
             </List.Item>
           )}
@@ -146,7 +146,7 @@ const AddToCartDrawer: React.FC = () => {
 
         {/* Total Price */}
         <div style={{ textAlign: "right", marginBottom: "16px" }}>
-          <Title level={5}>Total: ${calculateTotal().toFixed(2)}</Title>
+          <Title level={5}>Total: ৳{calculateTotal().toFixed(2)}</Title>
         </div>
 
         {/* Checkout Button */}
@@ -154,7 +154,7 @@ const AddToCartDrawer: React.FC = () => {
           Checkout
         </Button>
       </Drawer>
-    </>
+    </div>
   );
 };
 

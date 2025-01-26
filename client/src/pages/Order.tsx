@@ -1,15 +1,13 @@
 import { useState } from "react";
 import Header from "../components/shared/Header";
-import ProductModal from "../components/product/ProductModal";
-import ProductList from "../components/product/ProductList";
 import ProductCart from "../components/order/ProductCart";
 
 const Order: React.FC = () => {
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  // const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [toggleItems, setToggleItems] = useState<boolean>(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [productData, setProductData] = useState<any>(null);
-  const [hasCreated, setHasCreated] = useState<boolean>(false);
+  // const [productData, setProductData] = useState<any>(null);
+  // const [hasCreated, setHasCreated] = useState<boolean>(false);
 
   const handleToggleItems = () => {
     setToggleItems(!toggleItems);
@@ -35,7 +33,8 @@ const Order: React.FC = () => {
       {toggleItems ? (
         <ProductCart></ProductCart>
       ) : (
-        <ProductList hasCreated={hasCreated} />
+        // <ProductList hasCreated={hasCreated} />
+        <></>
       )}
     </div>
   );

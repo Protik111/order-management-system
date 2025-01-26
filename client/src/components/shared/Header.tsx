@@ -10,7 +10,11 @@ import AddToCartDrawer from "./AddToCard";
 const Header: React.FC = () => {
   const token = Cookies.get("user-cred");
 
-  const { cartOpen, setCartOpen } = useCart();
+  const { cart, cartOpen, setCartOpen } = useCart();
+
+  const getTotalItems = (): number => {
+    return cart.reduce((total, item) => total + (item.quantity || 0), 0);
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-white py-6 shadow-md shadow-black/10 z-[1024] dark:bg-darkRaisin">
@@ -51,8 +55,8 @@ const Header: React.FC = () => {
 
             {token && (
               <Badge
-                count={5}
-                overflowCount={99} // Limits the display to "99+"
+                count={getTotalItems()}
+                overflowCount={99}
                 style={{
                   backgroundColor: "#f5222d",
                   color: "white",

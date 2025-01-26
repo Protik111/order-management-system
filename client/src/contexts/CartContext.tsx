@@ -5,16 +5,8 @@ import {
   SetStateAction,
   useState,
 } from "react";
+import { Product } from "../types/Product";
 
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  discountedPrice?: number;
-  quantity: number;
-}
-
-// Define the shape of the cart context
 interface CartContextType {
   cart: Product[];
   addToCart: (product: Product) => void;
@@ -26,41 +18,40 @@ interface CartContextType {
   setCartOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-// Create the CartContext
 export const CartContext = createContext<CartContextType | undefined>(
   undefined
 );
 
-// Cart Provider component
 export const CartProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [cart, setCart] = useState<Product[]>([]);
   const [cartOpen, setCartOpen] = useState<boolean>(false);
 
-  // Add product to cart
   const addToCart = (product: Product) => {
     setCart((prevCart) => {
       const existingProduct = prevCart.find((item) => item.id === product.id);
+
       if (existingProduct) {
-        // If product exists, update its quantity
         return prevCart.map((item) =>
           item.id === product.id
-            ? { ...item, quantity: item.quantity + product.quantity }
+            ? {
+                ...item,
+                quantity: (item.quantity || 0) + 1,
+              }
             : item
         );
       }
-      // Add new product
-      return [...prevCart, product];
+
+      // Add new product with default quantity of 1
+      return [...prevCart, { ...product, quantity: 1 }];
     });
   };
 
-  // Remove product from cart
   const removeFromCart = (productId: string) => {
     setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
   };
 
-  // Update product quantity in the cart
   const updateQuantity = (productId: string, newQuantity: number) => {
     setCart((prevCart) =>
       prevCart.map((item) =>
@@ -69,15 +60,14 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
     );
   };
 
-  // Clear the entire cart
   const clearCart = () => {
     setCart([]);
   };
 
-  // Calculate total price of the cart
   const calculateTotal = () =>
     cart.reduce(
-      (acc, item) => acc + (item.discountedPrice || item.price) * item.quantity,
+      (acc, item) =>
+        acc + (item.discountedPrice || item.price) * (item.quantity as number),
       0
     );
 

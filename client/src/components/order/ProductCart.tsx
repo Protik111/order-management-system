@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Card, Row, Col, Tag, Spin, Typography, Image, Button } from "antd";
 import axiosInstance from "../../lib/axios";
+import { useCart } from "../../hooks/useCart";
+import { Product } from "../../types/Product";
 
 interface Slab {
   id: string;
@@ -10,25 +12,12 @@ interface Slab {
   discount: number;
 }
 
-type Product = {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  weight: number;
-  discountedPrice: number;
-  imageUrl?: string;
-  promotion?: {
-    type: "percentage" | "fixed" | "weighted";
-    discount: number;
-    slabs: Slab[];
-  };
-};
-
 const ProductCart = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [hasCreated] = useState<boolean>(false);
+
+  const { addToCart } = useCart();
 
   useEffect(() => {
     fetchProducts();
@@ -47,7 +36,7 @@ const ProductCart = () => {
   };
 
   const handleAddToCart = (product: Product) => {
-    console.log(product);
+    addToCart(product);
   };
 
   const calculateWeightedDiscount = (weight: number, slabs: Slab[]) => {
@@ -100,7 +89,7 @@ const ProductCart = () => {
                         </p>
 
                         <Tag color="green" style={{ fontSize: "1rem" }}>
-                          ৳{product?.discountedPrice.toFixed(2)}
+                          ৳{product?.discountedPrice}
                         </Tag>
 
                         {product.promotion && (
