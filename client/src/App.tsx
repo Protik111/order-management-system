@@ -8,12 +8,14 @@ import PrivateRoute from "./components/PrivateRoute";
 import Promotion from "./pages/Promotion";
 import Order from "./pages/Order";
 import Product from "./pages/Product";
+import Register from "./pages/Register";
 
 const App: React.FC = () => {
   return (
     <Routes>
       <Route path="/" element={<Login />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/Register" element={<Register />} />
       <Route
         path="/promotion"
         element={<PrivateRoute element={<Promotion />} />}

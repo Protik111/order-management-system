@@ -4,7 +4,7 @@ import useValidator from "../hooks/useValidator";
 import axiosInstance from "../lib/axios";
 import Spinner from "../components/ui/Spinner";
 import { AxiosError } from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import Header from "../components/shared/Header";
 
@@ -15,8 +15,8 @@ interface State {
 
 const Login: React.FC = () => {
   const [values, setValues] = useState<State>({
-    email: "admin@gmail.com",
-    password: "admin1234",
+    email: "",
+    password: "",
   });
   const [loading, setLoading] = useState(false);
   const { email, password } = values;
@@ -110,6 +110,7 @@ const Login: React.FC = () => {
               </label>
               <input
                 type="password"
+                name="password"
                 value={password}
                 onChange={(e) => handleChange(e)}
               />
@@ -130,6 +131,9 @@ const Login: React.FC = () => {
               {/* <Toaster position="top-center" richColors /> */}
             </div>
           </form>
+          <Link to="/register">
+            <p className="mt-4 text-green-600">Need an account?</p>
+          </Link>
         </div>
       </div>
     </div>
