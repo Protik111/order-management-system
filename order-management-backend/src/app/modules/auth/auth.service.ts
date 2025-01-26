@@ -91,7 +91,37 @@ const registerUser = async (
   return user;
 };
 
+const getUserData = async (
+  userId: string | undefined
+): Promise<Pick<User, "email">> => {
+  if (!userId) {
+    throw new ApiError(
+      httpStatus.UNAUTHORIZED,
+      "Unauthorized: No token provided"
+    );
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      email: true,
+      firstName: true,
+      lastName: true,
+      role: true,
+      gender: true,
+    },
+  });
+
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  return user;
+};
+
 export const AuthService = {
   loginUser,
   registerUser,
+  getUserData,
 };

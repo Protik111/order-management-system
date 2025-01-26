@@ -151,7 +151,7 @@ const AddToCartDrawer: React.FC = () => {
 
         {/* Checkout Button */}
         <Button type="primary" style={{ width: "100%" }}>
-          Checkout
+          Order Now
         </Button>
       </Drawer>
     </div>

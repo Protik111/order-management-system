@@ -6,6 +6,7 @@ import {
   useState,
 } from "react";
 import { Product } from "../types/Product";
+import { toast } from "sonner";
 
 interface CartContextType {
   cart: Product[];
@@ -42,6 +43,8 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
             : item
         );
       }
+
+      toast.success("Product added successfully!");
 
       // Add new product with default quantity of 1
       return [...prevCart, { ...product, quantity: 1 }];
