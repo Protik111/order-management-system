@@ -207,7 +207,7 @@ const Register: React.FC = () => {
           </form>
 
           <Link to="/login">
-            <p>Already have an account?</p>
+            <p className="mt-4 text-green-600">Already have an account?</p>
           </Link>
         </div>
       </div>
