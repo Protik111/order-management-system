@@ -17,6 +17,7 @@ interface CartContextType {
   calculateTotal: () => number;
   cartOpen: boolean;
   setCartOpen: Dispatch<SetStateAction<boolean>>;
+  setCart: Dispatch<SetStateAction<Product[]>>;
 }
 
 export const CartContext = createContext<CartContextType | undefined>(
@@ -78,6 +79,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
     <CartContext.Provider
       value={{
         cart,
+        setCart,
         addToCart,
         removeFromCart,
         updateQuantity,

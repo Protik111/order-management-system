@@ -10,6 +10,9 @@ import {
 } from "antd";
 import { useCart } from "../../hooks/useCart";
 import { useUserProfile } from "../../hooks/useUser";
+import { toast } from "sonner";
+import axiosInstance from "../../lib/axios";
+import { AxiosError } from "axios";
 
 const { Text, Title } = Typography;
 
@@ -17,11 +20,11 @@ const AddToCartDrawer: React.FC = () => {
   const [quantity, setQuantity] = useState(1);
   const { user } = useUserProfile();
 
-  console.log("user", user);
   const {
     cartOpen,
     setCartOpen,
     cart,
+    setCart,
     removeFromCart,
     calculateTotal,
     updateQuantity,
@@ -49,6 +52,38 @@ const AddToCartDrawer: React.FC = () => {
     };
     console.log("productor", product);
     // addToCart(product);
+  };
+
+  const handleOrder = async () => {
+    const payload = {
+      customerName: user?.firstName,
+      customerEmail: user?.email,
+      orderItems: cart.map((item) => ({
+        productId: item.id,
+        quantity: item.quantity,
+      })),
+    };
+
+    try {
+      const response = await axiosInstance.post("/order", payload);
+
+      if (response?.data?.statusCode === 201) {
+        toast.success("Order has been done");
+        setCart([]);
+        setCartOpen(false);
+      }
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      if (error) {
+        console.log(error);
+        toast.error(
+          axiosError?.response?.data?.message ??
+            "Error on making order Try again!"
+        );
+      } else {
+        toast.error("An unexpected error occurred.");
+      }
+    }
   };
 
   return (
@@ -154,7 +189,11 @@ const AddToCartDrawer: React.FC = () => {
         </div>
 
         {/* Checkout Button */}
-        <Button type="primary" style={{ width: "100%" }}>
+        <Button
+          type="primary"
+          style={{ width: "100%" }}
+          onClick={() => handleOrder()}
+        >
           Order Now
         </Button>
       </Drawer>
