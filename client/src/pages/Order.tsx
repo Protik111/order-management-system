@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Header from "../components/shared/Header";
 import ProductCart from "../components/order/ProductCart";
+import OrderList from "../components/order/OrderList";
 
 const Order: React.FC = () => {
   // const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -30,12 +31,7 @@ const Order: React.FC = () => {
         <hr className="mt-2 bg-[lightGray] h-[2px]" />
       </div>
 
-      {toggleItems ? (
-        <ProductCart></ProductCart>
-      ) : (
-        // <ProductList hasCreated={hasCreated} />
-        <></>
-      )}
+      {toggleItems ? <ProductCart></ProductCart> : <OrderList />}
     </div>
   );
 };

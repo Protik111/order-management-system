@@ -5,8 +5,8 @@ import {
   SetStateAction,
   useState,
 } from "react";
-import { Product } from "../types/Product";
 import { toast } from "sonner";
+import { Product } from "../types/Product";
 
 interface CartContextType {
   cart: Product[];
