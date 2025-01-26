@@ -35,7 +35,7 @@ cd video-upload-service
 - Navigate to the backend directory:
 
 ```bash
-cd backend
+cd order-management-backend
 ```
 
 - Install dependencies:
@@ -80,7 +80,7 @@ DATABASE_URL="postgresql://postgres-user:postgres-password@db:5432/manush-order-
 - Navigate to the frontend directory:
 
 ```bash
-cd frontend
+cd order-management-frontend
 ```
 
 - Install dependencies:
