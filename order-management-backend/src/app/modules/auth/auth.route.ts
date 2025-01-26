@@ -8,7 +8,7 @@ import auth from "../../middlewares/auth";
 const router = express.Router();
 
 router.get(
-  "/user-details",
+  "/profile",
   auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.MODERATOR, ENUM_USER_ROLE.USER),
   AuthController.getUserData
 );

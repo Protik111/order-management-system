@@ -9,11 +9,15 @@ import {
   Popconfirm,
 } from "antd";
 import { useCart } from "../../hooks/useCart";
+import { useUserProfile } from "../../hooks/useUser";
 
 const { Text, Title } = Typography;
 
 const AddToCartDrawer: React.FC = () => {
   const [quantity, setQuantity] = useState(1);
+  const { user } = useUserProfile();
+
+  console.log("user", user);
   const {
     cartOpen,
     setCartOpen,
