@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "C:\\Users\\rafiu\\OneDrive\\Desktop\\My_Resources\\My_Files\\Learning_Dev_Resources\\Courses\\Backend Engineering - Poridhi\\Projects\\manush-tech-task\\order-management-backend\\logs\\winston\\errors\\.63e241de2ae57dc5d4a5a04caccb07f141729c69-audit.json",
+    "files": [
+        {
+            "date": 1737913116874,
+            "name": "C:\\Users\\rafiu\\OneDrive\\Desktop\\My_Resources\\My_Files\\Learning_Dev_Resources\\Courses\\Backend Engineering - Poridhi\\Projects\\manush-tech-task\\order-management-backend\\logs\\winston\\errors\\phu-2025-26-01-23-error.log",
+            "hash": "03ad2778c6bff52e2f34b2db26a711fd82f3126b054b9a0a4e25c3f3449eeb72"
+        }
+    ],
+    "hashType": "sha256"
+}

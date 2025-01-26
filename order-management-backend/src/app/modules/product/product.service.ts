@@ -66,6 +66,7 @@ const updateProduct = async (
 };
 
 const deleteProduct = async (id: string): Promise<Product> => {
+  // Check if the product exists
   const existingProduct = await prisma.product.findUnique({
     where: { id },
   });
@@ -73,6 +74,10 @@ const deleteProduct = async (id: string): Promise<Product> => {
   if (!existingProduct) {
     throw new ApiError(httpStatus.NOT_FOUND, "Product not found");
   }
+
+  await prisma.orderProduct.deleteMany({
+    where: { productId: id },
+  });
 
   const deletedProduct = await prisma.product.delete({
     where: { id },

@@ -36,7 +36,7 @@ model Product {
   isEnabled         Boolean            @default(true) // To enable/disable the product
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
-  orders            OrderProduct[] // Relation to OrderProduct (to track products in orders)
+  orderProducts     OrderProduct[] // Relation to OrderProduct (to track products in orders)
   promotionProducts PromotionProduct[] // Relation to PromotionProduct for applied promotions
 
   @@map("products")
@@ -102,7 +102,7 @@ model OrderProduct {
   weight    Float
   subTotal  Float
   order     Order   @relation(fields: [orderId], references: [id])
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@map("orderProducts")
 }
